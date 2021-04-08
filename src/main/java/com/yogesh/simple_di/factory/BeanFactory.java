@@ -6,34 +6,29 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class BeanFactory {
-
-	private static Map<Class<?>,Object> beanBag = new HashMap<>();
-
-
+	
 	public static Object getBean(final Class<?> beanClass) {
-		if(beanClass == null) {
-			throw new IllegalArgumentException("beanClass not provided");
-		}
-		return beanBag.get(beanClass);
+		Objects.requireNonNull(beanClass, "beanClass not provided");
+		return BeanStore.getBean(beanClass);
 	}
 
 	public static Object createBean(Class<?> bean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-		if(bean == null) {
-			throw new IllegalArgumentException("bean not provided");
-		}
+		Objects.requireNonNull(bean, "bean not provided");
+		if(BeanStore.containsBean(bean))
+			return BeanStore.getBean(bean);
+		
 		Object assembleBean = BeanAssembly.assembleBean(bean);
-		beanBag.put(bean, assembleBean);
+		putBean(bean, assembleBean);
 		return assembleBean;
 	}
 
 	public static void putBean(Class<?> beanClass, Object bean) {
-		beanBag.put(beanClass, bean);
+		BeanStore.addBean(beanClass, bean);
 	}
 
 	private BeanFactory() {
@@ -48,9 +43,6 @@ public class BeanFactory {
 			if(Modifier.isStatic(beanToAssemble.getModifiers()) || beanToAssemble==BeanFactory.class)
 				return null;
 
-			if(beanBag.containsKey(beanToAssemble))
-				return beanBag.get(beanToAssemble);
-
 			List<Object> assembledDependencies =assembleBeanDependencies(beanToAssemble);
 			//			assembledDependencies.forEach(System.out::println);
 			
@@ -59,25 +51,21 @@ public class BeanFactory {
 			Constructor<?> constructor = beanToAssemble.getConstructor(classes.toArray(new Class[0]));
 			if(Modifier.isPublic(constructor.getModifiers())) {
 				Object newInstance = constructor.newInstance(assembledDependencies.toArray());
-				beanBag.put(beanToAssemble, newInstance);
+				BeanStore.addBean(beanToAssemble, newInstance);
 				return newInstance;
 			}
 			return null;
 
 		}
 		private static List<Object> assembleBeanDependencies(Class<?> parentBean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException{
-
 			List<Class<?>> classes = classTypeOfdependencies(parentBean);
-
-			// return classes.stream().map(c->assembleBean(c)).collect(Collectors.toList()); //unnecessary trouble of rethrowing ex
-			
+			// return classes.stream().map(c->assembleBean(c)).collect(Collectors.toList()); //unnecessary trouble of rethrowing ex	
 			List<Object> assembledDependencies = new ArrayList<>();
 			
 			for(Class<?> c : classes){
 				Object assembleBean = assembleBean(c);
 				assembledDependencies.add(assembleBean);
 			}
-
 			return assembledDependencies;
 		}
 		private static List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {

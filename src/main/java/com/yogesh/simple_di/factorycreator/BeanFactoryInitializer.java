@@ -13,6 +13,7 @@ import com.yogesh.simple_di.factory.BeanFactory;
 public class BeanFactoryInitializer {
 	
 	public void initializeBeanFactory() {
+		
 		Class<?>[] classes = null ;
 		try {
 			System.out.println("pcakage"+this.getClass().getPackage().getName());
@@ -87,4 +88,8 @@ public class BeanFactoryInitializer {
         return classes;
     }
 
+    enum InitializationOrder{
+    	ANNOTAION,
+    	SUB_PACKAGE
+    }
 }
