@@ -1,8 +1,9 @@
-package com.yogesh.simple_di.property;
+package com.yogesh.simple_di.factory.annotation.resolver;
 
 import java.lang.reflect.Field;
 
 import com.yogesh.simple_di.factory.annotation.Value;
+import com.yogesh.simple_di.property.PropertyFileReader;
 
 public class ValueResolver {
 

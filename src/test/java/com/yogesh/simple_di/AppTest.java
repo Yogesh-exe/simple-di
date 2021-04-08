@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.yogesh.simple_di.factory.BeanFactory;
+import com.yogesh.simple_di.factory.BruteBeanFactory;
 import com.yogesh.simple_di.factory.testclasses.Car;
 import com.yogesh.simple_di.factory.testclasses.Driver;
 
@@ -18,9 +19,11 @@ public class AppTest
 {
 	
     private static Object bean;
+    private static BeanFactory bruteBeanFactory;
     @BeforeClass
     public static void init() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-    bean = BeanFactory.createBean(Car.class);
+        bruteBeanFactory = new BruteBeanFactory();
+    	bean = bruteBeanFactory.createBean(Car.class);
     }
 	@Test
     public void createCar()
@@ -32,7 +35,7 @@ public class AppTest
 	@Test
     public void getDriver()
     {
-        assertEquals(Driver.class, BeanFactory.getBean(Driver.class).getClass());
+        assertEquals(Driver.class, bruteBeanFactory.getBean(Driver.class).getClass());
     }
 	
 }

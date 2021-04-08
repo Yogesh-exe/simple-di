@@ -9,8 +9,11 @@ import java.util.Enumeration;
 import java.util.List;
 
 import com.yogesh.simple_di.factory.BeanFactory;
+import com.yogesh.simple_di.factory.BruteBeanFactory;
 
 public class BeanFactoryInitializer {
+	
+	private BeanFactory beanFactory = new BruteBeanFactory();
 	
 	public void initializeBeanFactory() {
 		
@@ -25,7 +28,7 @@ public class BeanFactoryInitializer {
 		
 		for(Class<?> c: classes) {
 			try {
-				BeanFactory.createBean(c);
+				beanFactory.createBean(c);
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 					| IllegalArgumentException | InvocationTargetException e) {
 					System.out.println("Something is not right");
