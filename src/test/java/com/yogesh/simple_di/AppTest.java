@@ -20,7 +20,7 @@ public class AppTest
     private static Object bean;
     @BeforeClass
     public static void init() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-    bean = BeanFactory.addBean(Car.class);
+    bean = BeanFactory.createBean(Car.class);
     }
 	@Test
     public void createCar()

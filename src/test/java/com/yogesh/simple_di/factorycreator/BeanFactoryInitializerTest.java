@@ -1,8 +1,9 @@
-package com.yogesh.simple_di.factory;
+package com.yogesh.simple_di.factorycreator;
 
-import static org.junit.Assert.*;
-
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import com.yogesh.simple_di.factorycreator.BeanFactoryInitializer;
 
 public class BeanFactoryInitializerTest {
 
@@ -11,6 +12,7 @@ public class BeanFactoryInitializerTest {
 	public void test() {
 		
 		initializer.initializeBeanFactory();
+		
 	}
 
 }

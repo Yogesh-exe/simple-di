@@ -1,4 +1,4 @@
-package com.yogesh.simple_di.factory;
+package com.yogesh.simple_di.factorycreator;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+
+import com.yogesh.simple_di.factory.BeanFactory;
 
 public class BeanFactoryInitializer {
 	
@@ -22,7 +24,7 @@ public class BeanFactoryInitializer {
 		
 		for(Class<?> c: classes) {
 			try {
-				BeanFactory.addBean(c);
+				BeanFactory.createBean(c);
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 					| IllegalArgumentException | InvocationTargetException e) {
 					System.out.println("Something is not right");

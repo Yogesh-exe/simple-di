@@ -21,13 +21,17 @@ public class BeanFactory {
 		return beanBag.get(beanClass);
 	}
 
-	public static Object addBean(Class<?> bean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public static Object createBean(Class<?> bean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		if(bean == null) {
 			throw new IllegalArgumentException("bean not provided");
 		}
 		Object assembleBean = BeanAssembly.assembleBean(bean);
 		beanBag.put(bean, assembleBean);
 		return assembleBean;
+	}
+	
+	public static void putBean(Class<?> beanClass, Object bean) {
+		beanBag.put(beanClass, bean);
 	}
 
 	private BeanFactory() {

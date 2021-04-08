@@ -10,7 +10,6 @@ public class Car {
 		super();
 		this.driver = driver;
 		System.out.println("Car created");
-		System.out.println(this.driver.name);
 	}
 
 }
