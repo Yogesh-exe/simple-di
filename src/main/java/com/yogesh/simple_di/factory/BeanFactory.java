@@ -5,9 +5,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BeanFactory {
 
@@ -29,7 +31,7 @@ public class BeanFactory {
 		beanBag.put(bean, assembleBean);
 		return assembleBean;
 	}
-	
+
 	public static void putBean(Class<?> beanClass, Object bean) {
 		beanBag.put(beanClass, bean);
 	}
@@ -49,21 +51,10 @@ public class BeanFactory {
 			if(beanBag.containsKey(beanToAssemble))
 				return beanBag.get(beanToAssemble);
 
-			Field[] fields = beanToAssemble.getFields();
-			List<Class<?>> classes = new ArrayList<>();
-
-			for(Field f: fields) {
-				if(!"java.lang".equals(f.getType().getPackage().getName()))
-					classes.add(f.getType());
-			}
-
-			List<Object> assembledDependencies = new ArrayList<>();
-			for(Class<?> c : classes){
-				Object assembleBean = assembleBean(c);
-				assembledDependencies.add(assembleBean);
-			}
-
-//			assembledDependencies.forEach(System.out::println);
+			List<Object> assembledDependencies =assembleBeanDependencies(beanToAssemble);
+			//			assembledDependencies.forEach(System.out::println);
+			
+			List<Class<?>> classes = classTypeOfdependencies(beanToAssemble);
 
 			Constructor<?> constructor = beanToAssemble.getConstructor(classes.toArray(new Class[0]));
 			if(Modifier.isPublic(constructor.getModifiers())) {
@@ -73,6 +64,29 @@ public class BeanFactory {
 			}
 			return null;
 
+		}
+		private static List<Object> assembleBeanDependencies(Class<?> parentBean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException{
+
+			List<Class<?>> classes = classTypeOfdependencies(parentBean);
+
+			// return classes.stream().map(c->assembleBean(c)).collect(Collectors.toList()); //unnecessary trouble of rethrowing ex
+			
+			List<Object> assembledDependencies = new ArrayList<>();
+			
+			for(Class<?> c : classes){
+				Object assembleBean = assembleBean(c);
+				assembledDependencies.add(assembleBean);
+			}
+
+			return assembledDependencies;
+		}
+		private static List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {
+			Field[] fields = parentBean.getFields();
+
+			return Arrays.stream(fields)
+			.filter(f->!"java.lang".equals(f.getType().getPackage().getName()))
+			.map(Field::getType)
+			.collect(Collectors.toList());
 		}
 
 		private BeanAssembly() {
