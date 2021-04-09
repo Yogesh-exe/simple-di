@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BruteBeanFactory implements BeanFactory{
-	
+	private static final Logger logger = LoggerFactory.getLogger(BruteBeanFactory.class);
 	public Object getBean(final Class<?> beanClass) {
 		Objects.requireNonNull(beanClass, "beanClass not provided");
 		return BeanStore.getBean(beanClass);
@@ -38,7 +41,7 @@ public class BruteBeanFactory implements BeanFactory{
 
 	private static class BeanAssembly {
 		public static Object assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-			System.out.println("bean to assemble "+beanToAssemble.getName());
+			logger.debug("bean to assemble "+beanToAssemble.getName());
 
 			if(Modifier.isStatic(beanToAssemble.getModifiers()) || beanToAssemble==BruteBeanFactory.class)
 				return null;

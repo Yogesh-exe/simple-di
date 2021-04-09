@@ -1,4 +1,4 @@
-package com.winter.factory.configuration;
+package com.yogesh.simple_di.factory.configuration;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -9,8 +9,8 @@ import org.junit.Test;
 import com.winter.factory.BeanFactory;
 import com.winter.factory.BruteBeanFactory;
 import com.winter.factory.annotation.resolver.ConfigurationResolver;
-import com.winter.factory.testclasses.Car;
-import com.winter.factory.testclasses.ConfigTestClass;
+import com.yogesh.simple_di.factory.testclasses.Car;
+import com.yogesh.simple_di.factory.testclasses.ConfigTestClass;
 
 public class ConfigurationResolverTest {
 

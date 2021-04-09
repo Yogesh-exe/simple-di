@@ -8,18 +8,22 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.winter.factory.BeanFactory;
 import com.winter.factory.BruteBeanFactory;
 
 public class BeanFactoryInitializer {
 	
 	private BeanFactory beanFactory = new BruteBeanFactory();
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public void initializeBeanFactory() {
 		
 		Class<?>[] classes = null ;
 		try {
-			System.out.println("pcakage"+this.getClass().getPackage().getName());
+			logger.debug(this.getClass().getPackage().getName());
 			classes = getClasses(this.getClass().getPackage().getName());
 		} catch (ClassNotFoundException | IOException e) {
 
@@ -31,7 +35,7 @@ public class BeanFactoryInitializer {
 				beanFactory.createBean(c);
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 					| IllegalArgumentException | InvocationTargetException e) {
-					System.out.println("Something is not right");
+					logger.error("Something is not right");
 				e.printStackTrace();
 			}
 			

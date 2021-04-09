@@ -21,7 +21,7 @@ public class ConfigurationResolver {
 				Arrays.stream(parameterTypes)
 				.map(parameter -> beanFactory.getBean(parameter))
 				.collect(Collectors.toList());*/
-				Object createdBean = m.invoke(configClassInstance, new Object[0]);
+				Object createdBean = m.invoke(configClassInstance, new Object());
 				beanFactory.putBean(classToCreate,classToCreate.cast(createdBean));
 			}
 		}
