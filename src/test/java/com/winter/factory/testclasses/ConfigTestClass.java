@@ -1,4 +1,4 @@
-package com.yogesh.simple_di.factory.testclasses;
+package com.winter.factory.testclasses;
 
 import com.winter.factory.annotation.Bean;
 import com.winter.factory.annotation.Configuration;

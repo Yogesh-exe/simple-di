@@ -1,4 +1,4 @@
-package com.yogesh.simple_di.factorycreator;
+package com.winter.factorycreator;
 
 import org.junit.Test;
 

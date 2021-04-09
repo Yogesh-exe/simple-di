@@ -1,4 +1,4 @@
-package com.yogesh.simple_di;
+package com.winter;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,8 +11,8 @@ import org.junit.runners.JUnit4;
 
 import com.winter.factory.BeanFactory;
 import com.winter.factory.BruteBeanFactory;
-import com.yogesh.simple_di.factory.testclasses.Car;
-import com.yogesh.simple_di.factory.testclasses.Driver;
+import com.winter.factory.testclasses.Car;
+import com.winter.factory.testclasses.Driver;
 
 @RunWith(JUnit4.class)
 public class AppTest 

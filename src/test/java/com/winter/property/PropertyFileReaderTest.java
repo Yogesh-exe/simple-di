@@ -1,4 +1,4 @@
-package com.yogesh.simple_di.property;
+package com.winter.property;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
