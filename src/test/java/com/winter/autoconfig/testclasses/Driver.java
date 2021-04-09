@@ -1,4 +1,4 @@
-package com.winter.factory.testclasses;
+package com.winter.autoconfig.testclasses;
 
 public class Driver {
 

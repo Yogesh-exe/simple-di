@@ -13,25 +13,26 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.winter.factory.exception.ExceptionWrapper;
+
 public class BruteBeanFactory implements BeanFactory{
 	private static final Logger logger = LoggerFactory.getLogger(BruteBeanFactory.class);
-	public Object getBean(final Class<?> beanClass) {
-		Objects.requireNonNull(beanClass, "beanClass not provided");
-		return BeanStore.getBean(beanClass);
-	}
-
-	public Object createBean(Class<?> bean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	private ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+	
+	public Object createBean(Class<?> bean) {
 		Objects.requireNonNull(bean, "bean not provided");
 		if(BeanStore.containsBean(bean))
 			return BeanStore.getBean(bean);
 		
-		Object assembleBean = BeanAssembly.assembleBean(bean);
+		Object assembleBean = null;
+		try {
+			assembleBean = BeanAssembly.assembleBean(bean);
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+				| IllegalArgumentException | InvocationTargetException e) {
+			throw exceptionWrapper.wrappedException(e);
+		}
 		putBean(bean, assembleBean);
 		return assembleBean;
-	}
-
-	public void putBean(Class<?> beanClass, Object bean) {
-		BeanStore.addBean(beanClass, bean);
 	}
 
 	public BruteBeanFactory() {
@@ -41,13 +42,14 @@ public class BruteBeanFactory implements BeanFactory{
 
 	private static class BeanAssembly {
 		public static Object assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-			logger.debug("bean to assemble "+beanToAssemble.getName());
+			logger.info("bean to assemble "+beanToAssemble.getName());
 
-			if(Modifier.isStatic(beanToAssemble.getModifiers()) || beanToAssemble==BruteBeanFactory.class)
+			if(Modifier.isStatic(beanToAssemble.getModifiers()) 
+				|| beanToAssemble==BruteBeanFactory.class
+				|| beanToAssemble.isInterface())
 				return null;
 
 			List<Object> assembledDependencies =assembleBeanDependencies(beanToAssemble);
-			//			assembledDependencies.forEach(System.out::println);
 			
 			List<Class<?>> classes = classTypeOfdependencies(beanToAssemble);
 

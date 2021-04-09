@@ -1,4 +1,4 @@
-package com.winter.factory.testclasses;
+package com.winter.autoconfig.testclasses;
 
 import com.winter.factory.annotation.Bean;
 import com.winter.factory.annotation.Configuration;

@@ -6,11 +6,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.winter.autoconfig.testclasses.Car;
+import com.winter.autoconfig.testclasses.ConfigTestClass;
 import com.winter.factory.BeanFactory;
 import com.winter.factory.BruteBeanFactory;
 import com.winter.factory.annotation.resolver.ConfigurationResolver;
-import com.winter.factory.testclasses.Car;
-import com.winter.factory.testclasses.ConfigTestClass;
 
 public class ConfigurationResolverTest {
 

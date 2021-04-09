@@ -1,13 +1,18 @@
 package com.winter.factory;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 public interface BeanFactory {
 	
-	public Object getBean(final Class<?> beanClass);
+	public default Object getBean(final Class<?> beanClass) {
+		Objects.requireNonNull(beanClass, "beanClass not provided");
+		return BeanStore.getBean(beanClass);
+	}
 	
-	public Object createBean(Class<?> bean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException;
+	public Object createBean(Class<?> bean);
 
-	public void putBean(Class<?> beanClass, Object bean);
+	public default void putBean(Class<?> beanClass, Object bean) {
+		BeanStore.addBean(beanClass, bean);
+	}
 
 }

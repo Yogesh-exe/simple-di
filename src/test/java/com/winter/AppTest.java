@@ -9,10 +9,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.winter.autoconfig.testclasses.Car;
+import com.winter.autoconfig.testclasses.Driver;
 import com.winter.factory.BeanFactory;
 import com.winter.factory.BruteBeanFactory;
-import com.winter.factory.testclasses.Car;
-import com.winter.factory.testclasses.Driver;
 
 @RunWith(JUnit4.class)
 public class AppTest 
