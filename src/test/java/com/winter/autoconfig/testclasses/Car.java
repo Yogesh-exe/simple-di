@@ -1,10 +1,13 @@
 package com.winter.autoconfig.testclasses;
 
 public class Car {
-	
-	public Driver driver;
-	
+
+	private Driver driver;
+
 	//public String name;
+
+	public Car() {
+	}
 
 	public Car(Driver driver) {
 		super();
@@ -12,4 +15,12 @@ public class Car {
 		System.out.println("Car created");
 	}
 
+
+	public Driver getDriver() {
+		return driver;
+	}
+
+	public void setDriver(Driver driver) {
+		this.driver = driver;
+	}
 }

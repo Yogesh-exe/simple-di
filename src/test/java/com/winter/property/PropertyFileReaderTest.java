@@ -8,9 +8,9 @@ import com.winter.property.PropertyFileReader;
 public class PropertyFileReaderTest {
 
 	PropertyFileReader reader = new PropertyFileReader();
-	
+
 	@Test
-	public void test() {
+	public void testgetProperty() {
 		Assertions.assertThat(reader.getProperty("di.developer.name")).isEqualTo("Yogeshwar");
 	}
 

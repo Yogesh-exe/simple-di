@@ -23,5 +23,9 @@ public class ValueResolver {
 		this.propertyFileReader = propertyFileReader;
 	}
 
+	public ValueResolver() {
+		super();
+		this.propertyFileReader = new PropertyFileReader();
+	}
 
 }

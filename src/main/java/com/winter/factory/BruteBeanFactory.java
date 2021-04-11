@@ -17,7 +17,6 @@ import com.winter.factory.exception.ExceptionWrapper;
 
 public class BruteBeanFactory implements BeanFactory{
 	private static final Logger logger = LoggerFactory.getLogger(BruteBeanFactory.class);
-	private ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
 	
 	public Object createBean(Class<?> bean) {
 		Objects.requireNonNull(bean, "bean not provided");
@@ -29,7 +28,7 @@ public class BruteBeanFactory implements BeanFactory{
 			assembleBean = BeanAssembly.assembleBean(bean);
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| IllegalArgumentException | InvocationTargetException e) {
-			throw exceptionWrapper.wrappedException(e);
+			throw ExceptionWrapper.wrappedException(e);
 		}
 		putBean(bean, assembleBean);
 		return assembleBean;
