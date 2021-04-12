@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.winter.factory.annotation.Autowired;
 import com.winter.factory.exception.ExceptionWrapper;
 
 public class BruteBeanFactory extends AbstractBeanFactory{
@@ -78,11 +80,16 @@ public class BruteBeanFactory extends AbstractBeanFactory{
 			return assembledDependencies;
 		}
 		private List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {
-			Field[] fields = parentBean.getFields();
+			Constructor<?>[] constructors = parentBean.getConstructors();
+			
+			Parameter[] parameters = Arrays.stream(constructors)
+			.findFirst()
+			.orElseThrow(()->new RuntimeException("No Constructor")).getParameters();
 
-			return Arrays.stream(fields)
+
+			return Arrays.stream(parameters)
 			.filter(f->!"java.lang".equals(f.getType().getPackage().getName()))
-			.map(Field::getType)
+			.map(Parameter::getType)
 			.collect(Collectors.toList());
 		}
 

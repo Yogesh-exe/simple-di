@@ -32,10 +32,10 @@ public class AppTest
         assertEquals(Car.class, bean.getClass());
    }
 	
-	@Test
-    public void getDriver()
-    {
-        assertEquals(Driver.class, bruteBeanFactory.getBean(Driver.class).getClass());
-    }
+//	@Test
+//    public void getDriver()
+//    {
+//        assertEquals(Driver.class, bruteBeanFactory.getBean(Driver.class).getClass());
+//    }
 	
 }

@@ -27,65 +27,53 @@ public class ComponentResolver {
 	private static final Logger logger = LoggerFactory.getLogger(ComponentResolver.class);
 
 	public Set<Object> resolveComponent(Class<?> classToResolve) {
-		Set<Object> assemblecBean = null;
+		Set<Object> assemblecBean = new HashSet<>();
 		try {
-			assemblecBean = new ComponentBuilder().assembleBean(classToResolve);
+			assemblecBean = new ComponentBuilder().assembleBean(classToResolve,assemblecBean);
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| IllegalArgumentException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("Total assembled");
 		assemblecBean.forEach(System.out::println);
 		return assemblecBean;
 	}
 
 	private class ComponentBuilder {
 
-		public Set<Object> assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException,
+		public Set<Object> assembleBean(Class<?> beanToAssemble, Set<Object> assembledBeans) throws InstantiationException, IllegalAccessException,
 		NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 			logger.info("bean to assemble {}", beanToAssemble.getName());
-
-			Set<Object> assembledBeans = new HashSet<>();
 
 			if (Modifier.isStatic(beanToAssemble.getModifiers()) || beanToAssemble.isInterface())
 				return Set.of();
 
-			List<Object> assembledDependencies = assembleBeanDependencies(beanToAssemble);
+			List<Object> assembledDependencies = new ArrayList<>(); 
 
-			System.out.println("aall");
-			assembledDependencies.forEach(System.out::println);
+			List<Parameter> parameters = getConstructorParameters(beanToAssemble);
 
-			assembledBeans.addAll(assembledDependencies);
-
-			Constructor<?> constructor = getMainConstructor(beanToAssemble);
-			Object newInstance = constructor.newInstance(assembledDependencies.toArray());
-			assembledBeans.add(newInstance);
-			return assembledBeans;
-		}
-
-		private List<Object> assembleBeanDependencies(Class<?> parentBean)
-				throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException,
-				IllegalArgumentException, InvocationTargetException {
-			List<Parameter> parameters = getConstructorParameters(parentBean);
-
-			Map<String, Object> assembledDependencies = parameters.stream()
+			Map<String, Object> assembledDependenciesmap = parameters.stream()
 					.filter(f -> Objects.nonNull(f.getAnnotation(Value.class)))
 					.map(this::createInjectableField)
 					.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
+			assembledDependencies.addAll(assembledDependenciesmap.values())	;
 
 			for (Parameter c : parameters) {
-				if (!assembledDependencies.containsKey(c.getName())) {
-					Object assembleBean = assembleBean(c.getType());
-					assembledDependencies.put(c.getName(), assembleBean);
+				if (!assembledDependenciesmap.containsKey(c.getName())) {
+					Set<Object> beans = assembleBean(c.getType(),assembledBeans);
+					beans.stream().filter(b-> b.getClass()== c.getType()).collect(Collectors.toList());
+					assembledDependencies.addAll(beans.stream().filter(b-> b.getClass()== c.getType()).collect(Collectors.toList()));
 				}
 			}
-			return new ArrayList<>(assembledDependencies.values());
-		}
 
-		private List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {
-			return Optional.ofNullable(getConstructorParameters(parentBean)).orElse(Collections.emptyList()).stream()
-					.map(Parameter::getType).collect(Collectors.toList());
+			System.out.println("Äll dependencies before consturcot");
+			assembledDependencies.forEach(System.out::println);
+			Constructor<?> constructor = getMainConstructor(beanToAssemble);
+			Object newInstance = constructor.newInstance(assembledDependencies.toArray());
+			assembledBeans.add(newInstance);
+			return assembledBeans;
 		}
 
 		private List<Parameter> getConstructorParameters(Class<?> parentBean) {
