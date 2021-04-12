@@ -7,19 +7,19 @@ import com.winter.factory.annotation.Component;
 public class Car {
 
 	private Driver driver;
-	
+
 	private Engine engine;
 
-	//public String name;
+	// public String name;
 
 	public Car() {
 	}
 
 	@Autowired
-	public Car(Driver driver,Engine engine) {
+	public Car(Driver driver, Engine engine) {
 		super();
 		this.driver = driver;
-		this.engine=engine;
+		this.engine = engine;
 		System.out.println("Car created");
 	}
 

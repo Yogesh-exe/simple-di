@@ -11,16 +11,12 @@ public class Driver {
 	public Driver() {
 		System.out.println("Driver Created");
 	}
-	
-	
 
 	@Autowired
 	public Driver(@Value("driver.name") String name) {
-		System.out.println("Driver Created"+name);
+		System.out.println("Driver Created" + name);
 		this.name = name;
 	}
-
-
 
 	public String getName() {
 		return name;

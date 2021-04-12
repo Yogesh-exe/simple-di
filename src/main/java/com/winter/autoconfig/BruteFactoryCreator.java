@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.winter.factory.BeanFactory;
 import com.winter.factory.BruteBeanFactory;
 
-public class BruteFactoryCreator implements FactoryCreator{
+public class BruteFactoryCreator implements FactoryCreator {
 
 	private BeanFactory beanFactory;
 	private final Logger logger = LoggerFactory.getLogger(getClass());

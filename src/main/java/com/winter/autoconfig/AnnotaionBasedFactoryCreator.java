@@ -11,7 +11,6 @@ public class AnnotaionBasedFactoryCreator implements FactoryCreator {
 	private BeanFactory beanFactory;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-
 	public BeanFactory createFactory(Class<?> mainClass) {
 		return createFactory(mainClass, null);
 	}

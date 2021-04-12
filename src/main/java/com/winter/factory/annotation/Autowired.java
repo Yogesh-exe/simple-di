@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({ METHOD, PARAMETER, CONSTRUCTOR })
 public @interface Autowired {
-	  boolean required() default true;
+	boolean required() default true;
 }

@@ -10,9 +10,8 @@ public class WinterApplication {
 		return run(mainClass, null);
 	}
 
-	public static BeanFactory run(Class<?>mainClass, String... args) {
-		return factoryCreator.createFactory(mainClass,args);
+	public static BeanFactory run(Class<?> mainClass, String... args) {
+		return factoryCreator.createFactory(mainClass, args);
 	}
-
 
 }

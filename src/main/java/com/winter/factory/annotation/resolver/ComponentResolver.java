@@ -6,12 +6,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,47 +27,45 @@ public class ComponentResolver {
 	public Set<Object> resolveComponent(Class<?> classToResolve) {
 		Set<Object> assemblecBean = new HashSet<>();
 		try {
-			assemblecBean = new ComponentBuilder().assembleBean(classToResolve,assemblecBean);
+			assemblecBean = new ComponentBuilder().assembleBean(classToResolve, assemblecBean);
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| IllegalArgumentException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Total assembled");
-		assemblecBean.forEach(System.out::println);
+
 		return assemblecBean;
 	}
 
 	private class ComponentBuilder {
 
-		public Set<Object> assembleBean(Class<?> beanToAssemble, Set<Object> assembledBeans) throws InstantiationException, IllegalAccessException,
-		NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+		public Set<Object> assembleBean(Class<?> beanToAssemble, Set<Object> assembledBeans)
+				throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException,
+				IllegalArgumentException, InvocationTargetException {
 			logger.info("bean to assemble {}", beanToAssemble.getName());
 
 			if (Modifier.isStatic(beanToAssemble.getModifiers()) || beanToAssemble.isInterface())
 				return Set.of();
 
-			List<Object> assembledDependencies = new ArrayList<>(); 
+			List<Object> assembledDependencies = new ArrayList<>();
 
 			List<Parameter> parameters = getConstructorParameters(beanToAssemble);
 
 			Map<String, Object> assembledDependenciesmap = parameters.stream()
-					.filter(f -> Objects.nonNull(f.getAnnotation(Value.class)))
-					.map(this::createInjectableField)
+					.filter(f -> Objects.nonNull(f.getAnnotation(Value.class))).map(this::createInjectableField)
 					.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-			assembledDependencies.addAll(assembledDependenciesmap.values())	;
+			assembledDependencies.addAll(assembledDependenciesmap.values());
 
 			for (Parameter c : parameters) {
 				if (!assembledDependenciesmap.containsKey(c.getName())) {
-					Set<Object> beans = assembleBean(c.getType(),assembledBeans);
-					beans.stream().filter(b-> b.getClass()== c.getType()).collect(Collectors.toList());
-					assembledDependencies.addAll(beans.stream().filter(b-> b.getClass()== c.getType()).collect(Collectors.toList()));
+					Set<Object> beans = assembleBean(c.getType(), assembledBeans);
+					beans.stream().filter(b -> b.getClass() == c.getType()).collect(Collectors.toList());
+					assembledDependencies.addAll(
+							beans.stream().filter(b -> b.getClass() == c.getType()).collect(Collectors.toList()));
 				}
 			}
 
-			System.out.println("Äll dependencies before consturcot");
-			assembledDependencies.forEach(System.out::println);
 			Constructor<?> constructor = getMainConstructor(beanToAssemble);
 			Object newInstance = constructor.newInstance(assembledDependencies.toArray());
 			assembledBeans.add(newInstance);
@@ -92,9 +88,8 @@ public class ComponentResolver {
 				mainConstructor = constructors[0];
 			} else {
 				mainConstructor = Arrays.stream(constructors)
-						.filter(c -> Objects.nonNull(c.getAnnotation(Autowired.class)))
-						.findFirst()
-						.orElseThrow(()->new RuntimeException("Atleast one constructor should have @Autowired"));
+						.filter(c -> Objects.nonNull(c.getAnnotation(Autowired.class))).findFirst()
+						.orElseThrow(() -> new RuntimeException("Atleast one constructor should have @Autowired"));
 			}
 			return mainConstructor;
 		}

@@ -7,17 +7,17 @@ import com.winter.autoconfig.helper.ReflectionUtils;
 
 public interface BeanFactory {
 
-	public Object getBean(final Class<?> beanClass) ;
+	public Object getBean(final Class<?> beanClass);
 
 	public Object createBean(Class<?> bean);
-	
-	public default void createBeansUnderPackage(String basePackageName){
+
+	public default void createBeansUnderPackage(String basePackageName) {
 		List<Class<?>> sources = ReflectionUtils.getClasses(basePackageName);
-		sources.forEach(this::createBean);	
+		sources.forEach(this::createBean);
 	}
 
-	public  void putBean(Class<?> beanClass, Object bean) ;
-	
+	public void putBean(Class<?> beanClass, Object bean);
+
 	default void putAll(Collection<Object> beanCollection) {
 		beanCollection.forEach(c -> putBean(c.getClass(), c));
 	}

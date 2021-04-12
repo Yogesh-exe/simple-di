@@ -17,19 +17,22 @@ import com.winter.factory.annotation.resolver.ConfigurationResolver;
 public class ConfigurationResolverTest {
 
 	private static ConfigurationResolver configurationResolver;
-    private static Object bean;
-    private static BeanFactory bruteBeanFactory;
-    @BeforeClass
-    public static void init() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-        bruteBeanFactory = new BruteBeanFactory();
-        configurationResolver = new ConfigurationResolver();
-    	bean = bruteBeanFactory.createBean(Car.class);
-    }
+	private static Object bean;
+	private static BeanFactory bruteBeanFactory;
+
+	@BeforeClass
+	public static void init() throws InstantiationException, IllegalAccessException, NoSuchMethodException,
+			SecurityException, IllegalArgumentException, InvocationTargetException {
+		bruteBeanFactory = new BruteBeanFactory();
+		configurationResolver = new ConfigurationResolver();
+		bean = bruteBeanFactory.createBean(Car.class);
+	}
 
 	@Test
-	public void test(){
+	public void test() {
 
-			List<Object> resolveConfigClassDependency = configurationResolver.resolveConfigClassDependency(ConfigTestClass.class);
-			Assertions.assertThat(resolveConfigClassDependency).anyMatch(c->c.getClass()==Driver.class);
-		}
+		List<Object> resolveConfigClassDependency = ConfigurationResolver
+				.resolveConfigClassDependency(ConfigTestClass.class);
+		Assertions.assertThat(resolveConfigClassDependency).anyMatch(c -> c.getClass() == Driver.class);
+	}
 }

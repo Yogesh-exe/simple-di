@@ -4,8 +4,7 @@ public class FuelInjector {
 
 	public FuelInjector() {
 		super();
-	   System.out.println("Injector created");
+		System.out.println("Injector created");
 	}
-	
 
 }
