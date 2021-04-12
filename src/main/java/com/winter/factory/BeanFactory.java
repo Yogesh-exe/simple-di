@@ -1,21 +1,23 @@
 package com.winter.factory;
 
 import java.util.Collection;
-import java.util.Objects;
+import java.util.List;
+
+import com.winter.autoconfig.helper.ReflectionUtils;
 
 public interface BeanFactory {
 
-	default Object getBean(final Class<?> beanClass) {
-		Objects.requireNonNull(beanClass, "beanClass not provided");
-		return BeanStore.getBean(beanClass);
+	public Object getBean(final Class<?> beanClass) ;
+
+	public Object createBean(Class<?> bean);
+	
+	public default void createBeansUnderPackage(String basePackageName){
+		List<Class<?>> sources = ReflectionUtils.getClasses(basePackageName);
+		sources.forEach(this::createBean);	
 	}
 
-	Object createBean(Class<?> bean);
-
-	default void putBean(Class<?> beanClass, Object bean) {
-		BeanStore.addBean(beanClass, bean);
-	}
-
+	public  void putBean(Class<?> beanClass, Object bean) ;
+	
 	default void putAll(Collection<Object> beanCollection) {
 		beanCollection.forEach(c -> putBean(c.getClass(), c));
 	}

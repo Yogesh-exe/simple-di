@@ -7,12 +7,12 @@ import com.winter.factory.annotation.Configuration;
 public class ConfigTestClass {
 	
 	@Bean
-	public Car createCar() {
-		return new Car(null);
+	public Engine createEngine() {
+		return new Engine();
 	}
 	
 	public Car createCarNoAnnotaion() {
-		return new Car(null);
+		return new Car();
 	}
 	
 	@Bean

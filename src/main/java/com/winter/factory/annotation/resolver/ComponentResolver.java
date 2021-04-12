@@ -1,96 +1,120 @@
 package com.winter.factory.annotation.resolver;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.winter.factory.BeanStore;
-import com.winter.factory.BruteBeanFactory;
+import com.winter.autoconfig.helper.Pair;
+import com.winter.factory.annotation.Autowired;
 import com.winter.factory.annotation.Value;
 
 public class ComponentResolver {
 
 	private static final Logger logger = LoggerFactory.getLogger(ComponentResolver.class);
 
-	private ValueResolver valueResolver;
-
-	public ComponentResolver(ValueResolver valueResolver) {
-		super();
-		this.valueResolver = valueResolver;
-	}
-
-	public static Object resolveComponent(Class<?> classToResolve) {
-
-		Object assemblecBean = null;
+	public Set<Object> resolveComponent(Class<?> classToResolve) {
+		Set<Object> assemblecBean = null;
 		try {
-			assemblecBean = BeanAssembly.assembleBean(classToResolve);
+			assemblecBean = new ComponentBuilder().assembleBean(classToResolve);
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| IllegalArgumentException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		assemblecBean.forEach(System.out::println);
 		return assemblecBean;
 	}
 
-	private static class BeanAssembly {
-		private static ValueResolver valueResolver = new ValueResolver();
-		public static Object assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-			logger.info("bean to assemble {}",beanToAssemble.getName());
+	private class ComponentBuilder {
 
-			if(Modifier.isStatic(beanToAssemble.getModifiers())
-				|| beanToAssemble==BruteBeanFactory.class
-				|| beanToAssemble.isInterface())
-				return null;
+		public Set<Object> assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException,
+		NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+			logger.info("bean to assemble {}", beanToAssemble.getName());
 
-			List<Object> assembledDependencies =assembleBeanDependencies(beanToAssemble);
+			Set<Object> assembledBeans = new HashSet<>();
 
-			List<Class<?>> classes = classTypeOfdependencies(beanToAssemble);
+			if (Modifier.isStatic(beanToAssemble.getModifiers()) || beanToAssemble.isInterface())
+				return Set.of();
 
-			Constructor<?> constructor = beanToAssemble.getConstructor(classes.toArray(new Class[0]));
-			if(Modifier.isPublic(constructor.getModifiers())) {
-				Object newInstance = constructor.newInstance(assembledDependencies.toArray());
-				BeanStore.addBean(beanToAssemble, newInstance);
-				return newInstance;
+			List<Object> assembledDependencies = assembleBeanDependencies(beanToAssemble);
+
+			System.out.println("aall");
+			assembledDependencies.forEach(System.out::println);
+
+			assembledBeans.addAll(assembledDependencies);
+
+			Constructor<?> constructor = getMainConstructor(beanToAssemble);
+			Object newInstance = constructor.newInstance(assembledDependencies.toArray());
+			assembledBeans.add(newInstance);
+			return assembledBeans;
+		}
+
+		private List<Object> assembleBeanDependencies(Class<?> parentBean)
+				throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException,
+				IllegalArgumentException, InvocationTargetException {
+			List<Parameter> parameters = getConstructorParameters(parentBean);
+
+			Map<String, Object> assembledDependencies = parameters.stream()
+					.filter(f -> Objects.nonNull(f.getAnnotation(Value.class)))
+					.map(this::createInjectableField)
+					.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+
+			for (Parameter c : parameters) {
+				if (!assembledDependencies.containsKey(c.getName())) {
+					Object assembleBean = assembleBean(c.getType());
+					assembledDependencies.put(c.getName(), assembleBean);
+				}
 			}
-			return null;
+			return new ArrayList<>(assembledDependencies.values());
+		}
+
+		private List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {
+			return Optional.ofNullable(getConstructorParameters(parentBean)).orElse(Collections.emptyList()).stream()
+					.map(Parameter::getType).collect(Collectors.toList());
+		}
+
+		private List<Parameter> getConstructorParameters(Class<?> parentBean) {
+			Constructor<?> mainConstructor = getMainConstructor(parentBean);
+
+			return Arrays.asList(mainConstructor.getParameters());
 
 		}
-		private static List<Object> assembleBeanDependencies(Class<?> parentBean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException{
-			List<Class<?>> classes = classTypeOfdependencies(parentBean);
-			Field[] fields = parentBean.getFields();
-			List<Object> assembledDependencies = Arrays.stream(fields).filter(f -> null != f.getAnnotation(Value.class)).map(BeanAssembly::createInjectableField).collect(Collectors.toList());
 
-
-			for(Class<?> c : classes){
-				Object assembleBean = assembleBean(c);
-				assembledDependencies.add(assembleBean);
+		private Constructor<?> getMainConstructor(Class<?> parentBean) {
+			Constructor<?>[] constructors = parentBean.getConstructors();
+			Constructor<?> mainConstructor;
+			if (constructors.length == 0)
+				throw new RuntimeException("No public constructor");
+			else if (constructors.length == 1) {
+				mainConstructor = constructors[0];
+			} else {
+				mainConstructor = Arrays.stream(constructors)
+						.filter(c -> Objects.nonNull(c.getAnnotation(Autowired.class)))
+						.findFirst()
+						.orElseThrow(()->new RuntimeException("Atleast one constructor should have @Autowired"));
 			}
-			return assembledDependencies;
-		}
-		private static List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {
-			Field[] fields = parentBean.getFields();
-
-			return Arrays.stream(fields)
-			.map(Field::getType)
-			.collect(Collectors.toList());
+			return mainConstructor;
 		}
 
-		private static Object createInjectableField(Field field) {
-			return valueResolver.getFieldValue(field);
+		private Pair<String, Object> createInjectableField(Parameter field) {
+			return new Pair<>(field.getName(), ValueResolver.getFieldValue(field));
 		}
 
-		private BeanAssembly() {
-			throw new IllegalStateException("utility class");
-		}
 	}
-
 
 }

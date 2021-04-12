@@ -7,11 +7,9 @@ import com.winter.property.PropertyFileReader;
 
 public class PropertyFileReaderTest {
 
-	PropertyFileReader reader = new PropertyFileReader();
-
 	@Test
 	public void testgetProperty() {
-		Assertions.assertThat(reader.getProperty("di.developer.name")).isEqualTo("Yogeshwar");
+		Assertions.assertThat(PropertyFileReader.getProperty("di.developer.name")).isEqualTo("Yogeshwar");
 	}
 
 }

@@ -5,12 +5,14 @@ import java.util.Properties;
 
 public class PropertyFileReader {
 
-	private Properties properties;
+	private static Properties properties = new Properties();
 
-
-	private static final String DEFAULT_PROPERTY_FILE ="application.properties";
-
-	private void readPropertyFile(String propertyFile ) {
+	private static void readPropertyFile() {
+		String profile = null != System.getProperty("winter.profile.active")?System.getProperty("winter.profile.active"):"";
+		String propertyFile = new StringBuilder()
+								.append("application")
+								.append(profile)
+								.append(".properties").toString();
 		System.out.println(propertyFile);
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		try (InputStream resourceStream = loader.getResourceAsStream(propertyFile)) {
@@ -20,20 +22,14 @@ public class PropertyFileReader {
 		}
 
 	}
+	static {
+		readPropertyFile();
+	}
 
-	public Object getProperty(String key) {
-
+	public static Object getProperty(String key) {
 		return properties.get(key);
 	}
-
-	public PropertyFileReader(String propertyFileName) {
-		properties= new Properties();
-		readPropertyFile(propertyFileName);
-	}
-
-	public PropertyFileReader() {
-		this(DEFAULT_PROPERTY_FILE);
-	}
-
+	
+	private PropertyFileReader() {}
 
 }

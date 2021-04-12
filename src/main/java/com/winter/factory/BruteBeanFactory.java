@@ -15,17 +15,21 @@ import org.slf4j.LoggerFactory;
 
 import com.winter.factory.exception.ExceptionWrapper;
 
-public class BruteBeanFactory implements BeanFactory{
+public class BruteBeanFactory extends AbstractBeanFactory{
+		
 	private static final Logger logger = LoggerFactory.getLogger(BruteBeanFactory.class);
 	
+	private BeanAssembly beanAssembly = new BeanAssembly();
+	
+	@Override
 	public Object createBean(Class<?> bean) {
 		Objects.requireNonNull(bean, "bean not provided");
-		if(BeanStore.containsBean(bean))
-			return BeanStore.getBean(bean);
+		if(beanStore.containsBean(bean))
+			return beanStore.getBean(bean);
 		
 		Object assembleBean = null;
 		try {
-			assembleBean = BeanAssembly.assembleBean(bean);
+			assembleBean = beanAssembly.assembleBean(bean);
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| IllegalArgumentException | InvocationTargetException e) {
 			throw ExceptionWrapper.wrappedException(e);
@@ -39,8 +43,9 @@ public class BruteBeanFactory implements BeanFactory{
 	}
 
 
-	private static class BeanAssembly {
-		public static Object assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	private class BeanAssembly {
+		
+		public Object assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 			logger.info("bean to assemble "+beanToAssemble.getName());
 
 			if(Modifier.isStatic(beanToAssemble.getModifiers()) 
@@ -55,13 +60,13 @@ public class BruteBeanFactory implements BeanFactory{
 			Constructor<?> constructor = beanToAssemble.getConstructor(classes.toArray(new Class[0]));
 			if(Modifier.isPublic(constructor.getModifiers())) {
 				Object newInstance = constructor.newInstance(assembledDependencies.toArray());
-				BeanStore.addBean(beanToAssemble, newInstance);
+				beanStore.addBean(beanToAssemble, newInstance);
 				return newInstance;
 			}
 			return null;
 
 		}
-		private static List<Object> assembleBeanDependencies(Class<?> parentBean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException{
+		private List<Object> assembleBeanDependencies(Class<?> parentBean) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException{
 			List<Class<?>> classes = classTypeOfdependencies(parentBean);
 			// return classes.stream().map(c->assembleBean(c)).collect(Collectors.toList()); //unnecessary trouble of rethrowing ex	
 			List<Object> assembledDependencies = new ArrayList<>();
@@ -72,7 +77,7 @@ public class BruteBeanFactory implements BeanFactory{
 			}
 			return assembledDependencies;
 		}
-		private static List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {
+		private List<Class<?>> classTypeOfdependencies(Class<?> parentBean) {
 			Field[] fields = parentBean.getFields();
 
 			return Arrays.stream(fields)
@@ -81,9 +86,6 @@ public class BruteBeanFactory implements BeanFactory{
 			.collect(Collectors.toList());
 		}
 
-		private BeanAssembly() {
-			throw new IllegalStateException("utility class");
-		}
 	}
 
 

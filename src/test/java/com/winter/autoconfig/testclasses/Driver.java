@@ -1,5 +1,6 @@
 package com.winter.autoconfig.testclasses;
 
+import com.winter.factory.annotation.Autowired;
 import com.winter.factory.annotation.Value;
 
 public class Driver {
@@ -10,6 +11,16 @@ public class Driver {
 	public Driver() {
 		System.out.println("Driver Created");
 	}
+	
+	
+
+	@Autowired
+	public Driver(@Value("driver.name") String name) {
+		System.out.println("Driver Created");
+		this.name = name;
+	}
+
+
 
 	public String getName() {
 		return name;
