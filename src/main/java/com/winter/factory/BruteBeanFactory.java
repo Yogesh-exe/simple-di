@@ -38,10 +38,6 @@ public class BruteBeanFactory extends AbstractBeanFactory {
 		return assembleBean;
 	}
 
-	public BruteBeanFactory() {
-	
-	}
-
 	private class BeanAssembly {
 
 		public Object assembleBean(Class<?> beanToAssemble) throws InstantiationException, IllegalAccessException,

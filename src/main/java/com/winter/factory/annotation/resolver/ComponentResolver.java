@@ -20,6 +20,7 @@ import com.winter.autoconfig.helper.Pair;
 import com.winter.factory.BeanFactory;
 import com.winter.factory.annotation.Autowired;
 import com.winter.factory.annotation.Value;
+import com.winter.factory.exception.ExceptionWrapper;
 
 public class ComponentResolver {
 
@@ -31,7 +32,7 @@ public class ComponentResolver {
 			assembledBean = new ComponentBuilder().assembleBean(classToResolve, assembledBean,beanFactory);
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+			ExceptionWrapper.wrappedException(e);
 		}
 
 		return assembledBean;
@@ -91,7 +92,7 @@ public class ComponentResolver {
 			} else {
 				mainConstructor = Arrays.stream(constructors)
 						.filter(c -> Objects.nonNull(c.getAnnotation(Autowired.class))).findFirst()
-						.orElseThrow(() -> new RuntimeException("Atleast one constructor should have @Autowired"));
+						.orElseThrow(() -> new RuntimeException("At least one constructor should have @Autowired"));
 			}
 			return mainConstructor;
 		}

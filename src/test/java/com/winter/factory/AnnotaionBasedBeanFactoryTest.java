@@ -1,7 +1,5 @@
 package com.winter.factory;
 
-import static org.junit.Assert.*;
-
 import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;

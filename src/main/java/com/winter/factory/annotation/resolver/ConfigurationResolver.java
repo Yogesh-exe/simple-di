@@ -6,39 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.winter.factory.annotation.Bean;
+import com.winter.factory.exception.ExceptionWrapper;
 
 public class ConfigurationResolver {
 
 	public static List<Object> resolveConfigClassDependency(Class<?> configClass) {
 		Object configClassInstance = null;
+		List<Object> constructedBeans = new ArrayList<>();
 		try {
 			configClassInstance = configClass.getDeclaredConstructor().newInstance();
+			Method[] methods = configClass.getMethods();
+
+			for (Method m : methods) {
+				if (m.isAnnotationPresent(Bean.class)) {
+					Object createdBean = null;
+					createdBean = m.invoke(configClassInstance, new Object[0]);
+					constructedBeans.add(createdBean);
+				}
+			}
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Method[] methods = configClass.getMethods();
-		List<Object> constructedBeans = new ArrayList<>();
-
-		for (Method m : methods) {
-			if (m.isAnnotationPresent(Bean.class)) {
-
-				Class<?> classToCreate = m.getReturnType();
-				/*
-				 * Class<?>[] parameterTypes = m.getParameterTypes(); Object[]
-				 * methodparametersObjects; Arrays.stream(parameterTypes) .map(parameter ->
-				 * beanFactory.getBean(parameter)) .collect(Collectors.toList());
-				 */
-				Object createdBean = null;
-				try {
-					createdBean = m.invoke(configClassInstance, new Object[0]);
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				constructedBeans.add(createdBean);
-			}
+			ExceptionWrapper.wrappedException(e);
 		}
 		return constructedBeans;
 	}

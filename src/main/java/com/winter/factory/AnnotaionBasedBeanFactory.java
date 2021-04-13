@@ -27,7 +27,7 @@ public class AnnotaionBasedBeanFactory extends AbstractBeanFactory {
 
 		sources.stream().filter(c -> Objects.nonNull(c.getAnnotation(Component.class)))
 		.filter(c->Objects.isNull(beanStore.getBean(c)))
-		.map(c-> this.createBean(c))
+		.map(this::createBean)
 		.forEach(this::putAll);
 	}
 
