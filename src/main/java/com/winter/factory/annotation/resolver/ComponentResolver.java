@@ -25,16 +25,15 @@ public class ComponentResolver {
 	private static final Logger logger = LoggerFactory.getLogger(ComponentResolver.class);
 
 	public Set<Object> resolveComponent(Class<?> classToResolve) {
-		Set<Object> assemblecBean = new HashSet<>();
+		Set<Object> assembledBean = new HashSet<>();
 		try {
-			assemblecBean = new ComponentBuilder().assembleBean(classToResolve, assemblecBean);
+			assembledBean = new ComponentBuilder().assembleBean(classToResolve, assembledBean);
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return assemblecBean;
+		return assembledBean;
 	}
 
 	private class ComponentBuilder {

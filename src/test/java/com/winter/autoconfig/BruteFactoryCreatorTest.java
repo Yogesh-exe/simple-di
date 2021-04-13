@@ -15,7 +15,8 @@ public class BruteFactoryCreatorTest {
 	public void testCreatedFactory() {
 
 		BeanFactory createdFactory = factoryCreator.createFactory(Car.class, null);
-		assertThat(createdFactory.getBean(Car.class)).isInstanceOf(Car.class);
+		Car car = createdFactory.getBean(Car.class);
+		assertThat(car).isInstanceOf(Car.class);
 	}
 
 }

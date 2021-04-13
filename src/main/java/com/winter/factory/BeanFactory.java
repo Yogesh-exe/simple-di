@@ -7,7 +7,7 @@ import com.winter.autoconfig.helper.ReflectionUtils;
 
 public interface BeanFactory {
 
-	public Object getBean(final Class<?> beanClass);
+	public <T> T getBean(final Class<?> beanClass);
 
 	public Object createBean(Class<?> bean);
 

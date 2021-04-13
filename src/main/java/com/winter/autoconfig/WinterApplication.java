@@ -7,7 +7,7 @@ public class WinterApplication {
 	private static FactoryCreator factoryCreator = new BruteFactoryCreator();
 
 	public static BeanFactory run(Class<?> mainClass) {
-		return run(mainClass, null);
+		return run(mainClass, new String[0]);
 	}
 
 	public static BeanFactory run(Class<?> mainClass, String... args) {
