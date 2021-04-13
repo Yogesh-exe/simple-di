@@ -25,17 +25,15 @@ public class AnnotaionBasedBeanFactory extends AbstractBeanFactory {
 
 		putAll(configuredBean);
 
-		Set<Object> componentBean = sources.stream().filter(c -> Objects.nonNull(c.getAnnotation(Component.class)))
-				.filter(c->Objects.isNull(beanStore.getBean(c)))
-				.map(componentResolver::resolveComponent).flatMap(Set::stream).collect(Collectors.toSet());
-
-		putAll(componentBean);
-
+		sources.stream().filter(c -> Objects.nonNull(c.getAnnotation(Component.class)))
+		.filter(c->Objects.isNull(beanStore.getBean(c)))
+		.map(c-> this.createBean(c))
+		.forEach(this::putAll);
 	}
 
 	@Override
-	public Object createBean(Class<?> bean) {
-		return componentResolver.resolveComponent(bean);
+	public Set<Object> createBean(Class<?> bean) {
+		return componentResolver.resolveComponent(bean,this);
 	}
 
 }

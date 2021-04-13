@@ -15,5 +15,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	public void putBean(Class<?> beanClass, Object bean) {
 		beanStore.addBean(beanClass, bean);
 	}
+
+	@Override
+	public boolean hasBean(Class<?> bean) {
+		return beanStore.containsBean(bean);
+	}
 	
 }

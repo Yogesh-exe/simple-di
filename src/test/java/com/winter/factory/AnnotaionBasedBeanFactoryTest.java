@@ -21,12 +21,13 @@ public class AnnotaionBasedBeanFactoryTest {
 
 	@Test
 	public void testCreateBeansUnderPackage() {
+		System.out.println("start");
 		beanFactory.createBeansUnderPackage(Car.class.getPackageName());
 		
-	//	Assertions.assertThat(beanFactory.getBean(Car.class)).isNotNull();
+		Car car = beanFactory.getBean(Car.class);
+		Assertions.assertThat(car).isNotNull().isInstanceOf(Car.class);
 	  	Driver driver = beanFactory.getBean(Driver.class);
-	  	
-		Assertions.assertThat(driver.getName()).isEqualTo("Yogesh");
+		//Assertions.assertThat(driver.getName()).isEqualTo("Yogesh"); as it is contructed from configclass itself
 	}
 
 }

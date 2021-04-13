@@ -17,6 +17,7 @@ public class ConfigTestClass {
 
 	@Bean
 	public Driver createDriver() {
+		System.out.println("in config createDriver");
 		return new Driver();
 	}
 

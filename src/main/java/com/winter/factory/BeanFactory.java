@@ -15,6 +15,8 @@ public interface BeanFactory {
 		List<Class<?>> sources = ReflectionUtils.getClasses(basePackageName);
 		sources.forEach(this::createBean);
 	}
+	
+	public boolean hasBean(Class<?> bean);
 
 	public void putBean(Class<?> beanClass, Object bean);
 
