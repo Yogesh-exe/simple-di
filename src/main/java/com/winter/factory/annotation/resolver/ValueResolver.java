@@ -11,7 +11,7 @@ public class ValueResolver {
 		Value annotation;
 		if ((annotation = field.getAnnotation(Value.class)) != null) {
 			String value = annotation.value();
-			return PropertyFileReader.getProperty(value);
+			return PropertyFileReader.getProperty(value, field.getClass());
 		}
 		return null;
 	}
