@@ -1,6 +1,6 @@
 # Simple Dependency Injection
 
-Goal is to understand/show the basics of spring magic.
+Goal is to understand/show the basics of spring magic with simple DI's working.
 To learn follow the WinterApplication.run()
 
 How to Use?:
